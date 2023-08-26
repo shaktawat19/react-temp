@@ -1,7 +1,7 @@
 import { Action } from "../actions"
 import { ActionType } from "../action-types"
 
-const initialState = 0
+const initialState = 5000000
 
 const reducer = (state: number = initialState, action: Action) => {
   switch (action.type) {
