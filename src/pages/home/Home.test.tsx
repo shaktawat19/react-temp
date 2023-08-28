@@ -1,19 +1,43 @@
-import renderer from 'react-test-renderer'
 import Home from './Home'
 import Enzyme from 'enzyme'
 import Adapter from '@cfaester/enzyme-adapter-react-18'
-import { shallow } from 'enzyme'
+import { shallow, mount, ReactWrapper } from 'enzyme'
+import { Provider } from 'react-redux';
+import configureStore from 'redux-mock-store';
+import App from '../../App';
+import { Store } from 'redux';
 
 Enzyme.configure({ adapter: new Adapter() })
 
-describe('Home component', () => {
+const mockStore = configureStore([]);
+
+describe('Counter', () => {
+  let store: Store;
+  let component: ReactWrapper;
+
+  beforeEach(() => {
+    store = mockStore(5000000);
+
+    component = mount(
+      <Provider store={store}>
+        <App />
+      </Provider>
+    );
+  });
+
   it('renders correctly', () => {
-    const wrapper = shallow(<Home />)
+    expect(component).toMatchSnapshot();
+  });
 
-    // Check if the component renders a specific element
-    expect(wrapper.contains(<h1>HOME PAGE</h1>)).toBe(true)
+  it('deposits the money', () => {
+    component.find('button.deposit').simulate('click');
+    const actions = store.getActions();
+    expect(actions).toEqual([{ type: 'deposit' }]); 
+  });
 
-    // Check if the component contains a specific class
-    expect(wrapper.find('.my-class')).toHaveLength(1)
-  })
-})
+  it('decrements the counter', () => {
+    component.find('button.withdraw').simulate('click');
+    const actions = store.getActions();
+    expect(actions).toEqual([{ type: 'withdraw' }]); 
+  });
+});
