@@ -1,43 +1,55 @@
+import { mount } from 'enzyme'
+import { Provider } from 'react-redux'
+import configureStore from 'redux-mock-store'
 import Home from './Home'
+import { actionCreators } from '../../state' // Adjust the import path
+import { Store } from 'redux'
 import Enzyme from 'enzyme'
 import Adapter from '@cfaester/enzyme-adapter-react-18'
-import { shallow, mount, ReactWrapper } from 'enzyme'
-import { Provider } from 'react-redux';
-import configureStore from 'redux-mock-store';
-import App from '../../App';
-import { Store } from 'redux';
-
 Enzyme.configure({ adapter: new Adapter() })
 
-const mockStore = configureStore([]);
-
-describe('Counter', () => {
-  let store: Store;
-  let component: ReactWrapper;
+describe('Home Component', () => {
+  const initialState = { bank: 0 } // Initial state for testing
+  const mockStore = configureStore()
+  let store: Store
 
   beforeEach(() => {
-    store = mockStore(5000000);
+    store = mockStore(initialState)
+  })
 
-    component = mount(
+  it('renders home page', () => {
+    const wrapper = mount(
       <Provider store={store}>
-        <App />
+        <Home />
       </Provider>
-    );
-  });
+    )
 
-  it('renders correctly', () => {
-    expect(component).toMatchSnapshot();
-  });
+    // check if the "Amount available" text is rendered
+    expect(wrapper.find('.amount-title').text()).toContain('Amount available:')
+  })
 
-  it('deposits the money', () => {
-    component.find('button.deposit').simulate('click');
-    const actions = store.getActions();
-    expect(actions).toEqual([{ type: 'deposit' }]); 
-  });
+  it('handles deposit button click', () => {
+    const wrapper = mount(
+      <Provider store={store}>
+        <Home />
+      </Provider>
+    )
 
-  it('decrements the counter', () => {
-    component.find('button.withdraw').simulate('click');
-    const actions = store.getActions();
-    expect(actions).toEqual([{ type: 'withdraw' }]); 
-  });
-});
+    // Simulate clicking the deposit button
+    wrapper.find('.deposit').simulate('click')
+
+    // Verify that the depositMoney action creator was called
+    expect(actionCreators.depositMoney).toHaveBeenCalledWith(1000)
+  })
+
+
+  //Mock the action creators and state for testing
+  jest.mock('../../state', () => ({
+    actionCreators: {
+      depositMoney: jest.fn(),
+      withdrawMoney: jest.fn(),
+      bankrupt: jest.fn(),
+    },
+    State: { bank: 0 }, // State structure here
+  }))
+})

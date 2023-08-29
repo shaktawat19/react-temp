@@ -24,7 +24,7 @@ const Home = () => {
           justifyContent: 'space-evenly',
         }}
       >
-        <h1>Amount available: {amount}</h1>
+        <h1 className='amount-title'>Amount available: {amount}</h1>
         <button onClick={() => withdrawMoney(1000)} className="withdraw">
           Withdraw 1000
         </button>
