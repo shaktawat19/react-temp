@@ -3,6 +3,9 @@ import { mount } from 'enzyme';
 import { MemoryRouter } from 'react-router-dom'; // Using MemoryRouter to test components that use React Router
 import Menu from './Menu';
 import { menu } from "../../data";
+import Enzyme from 'enzyme'
+import Adapter from '@cfaester/enzyme-adapter-react-18'
+Enzyme.configure({ adapter: new Adapter() })
 
 describe('Menu Component', () => {
   it('renders menu items', () => {
